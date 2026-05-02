@@ -1,10 +1,5 @@
 # Fraud Signal Pipeline
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4+-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![Rust](https://img.shields.io/badge/Rust-1.78+-000000?style=flat-square&logo=rust&logoColor=white)](https://rust-lang.org)
-[![Bash](https://img.shields.io/badge/Bash-5.2+-4EAA25?style=flat-square&logo=gnubash&logoColor=white)](https://gnu.org/software/bash)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-
 A **real-time transaction fraud signal processing pipeline** combining a high-throughput Rust stream processor with a TypeScript analytics dashboard and Bash-based DevOps automation. Designed to evaluate transactions against a configurable rule engine and statistical anomaly detectors before they settle, with sub-10ms median evaluation latency at sustained throughput of 50,000 TPS.
 
 ---
