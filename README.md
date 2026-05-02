@@ -1,10 +1,5 @@
 # NetWatch Anomaly Detector
 
-[![C++](https://img.shields.io/badge/C++-20-00599C?style=flat-square&logo=cplusplus&logoColor=white)](https://isocpp.org)
-[![Java](https://img.shields.io/badge/Java-21-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org)
-[![R](https://img.shields.io/badge/R-4.4+-276DC3?style=flat-square&logo=r&logoColor=white)](https://r-project.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-
 A **distributed network packet anomaly detection system** for identifying exfiltration patterns, lateral movement, and volumetric DDoS precursors at wire speed. The C++ capture layer ingests raw packets via `libpcap`, extracts flow-level features, and streams them over gRPC to a Java-based distributed coordinator that orchestrates detection across multiple sensor nodes. An R analysis module ingests the coordinator's aggregated flow telemetry to perform statistical baseline modeling and threshold calibration using **CUSUM** (Cumulative Sum Control Charts) and **Isolation Forest** outlier scoring.
 
 ---
