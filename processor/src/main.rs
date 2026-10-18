@@ -24,6 +24,14 @@ mod stream;
 use stream::{FeatureExtractor, RuleEngine, SignalEmitter};
 
 // ---------------------------------------------------------------------------
+// Score weights — must sum to 1.0
+// ---------------------------------------------------------------------------
+
+const RULE_WEIGHT:     f64 = 0.50;
+const VELOCITY_WEIGHT: f64 = 0.30;
+const ENTROPY_WEIGHT:  f64 = 0.20;
+
+// ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
@@ -141,9 +149,9 @@ async fn process_message(
     let (rule_score, triggered) = rules.evaluate(&txn, &features);
 
     // Composite score
-    let composite = (0.50 * rule_score)
-        + (0.30 * features.velocity_score)
-        + (0.20 * features.entropy_score);
+    let composite = (RULE_WEIGHT * rule_score)
+        + (VELOCITY_WEIGHT * features.velocity_score)
+        + (ENTROPY_WEIGHT * features.entropy_score);
 
     let signal = FraudSignal {
         txn_id:          txn_id.clone(),
@@ -251,9 +259,9 @@ async fn main() -> Result<()> {
                         if let Ok(txn) = serde_json::from_slice::<RawTransaction>(&payload) {
                             let features = extractor.extract(&txn).await;
                             let (rule_score, triggered) = rules.evaluate(&txn, &features);
-                            let composite = (0.50 * rule_score)
-                                + (0.30 * features.velocity_score)
-                                + (0.20 * features.entropy_score);
+                            let composite = (RULE_WEIGHT * rule_score)
+                                + (VELOCITY_WEIGHT * features.velocity_score)
+                                + (ENTROPY_WEIGHT * features.entropy_score);
 
                             let signal = FraudSignal {
                                 txn_id:          txn.txn_id.clone(),
