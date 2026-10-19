@@ -118,8 +118,13 @@ class SignalBroadcaster {
     WebSocket,
     { filters: ClientMessage["filters"]; connectedAt: number }
   >();
+  private readonly maxClients = 500;
 
   register(ws: WebSocket): void {
+    if (this.clients.size >= this.maxClients) {
+      ws.close(1013, "max clients reached");
+      return;
+    }
     this.clients.set(ws, { filters: {}, connectedAt: Date.now() });
     ws.on("message", (data) => this.handleClientMessage(ws, data.toString()));
     ws.on("close", () => this.clients.delete(ws));
