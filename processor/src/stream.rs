@@ -49,10 +49,11 @@ impl FeatureExtractor {
             window: RwLock::new(HashMap::new()),
             window_secs: 60,
             high_risk_mccs: vec![
-                6010, 6011, 6050, // Cash/ATM
-                7995,             // Gambling
-                5912, 5122,       // Drug stores (high CNP fraud)
-                4829,             // Wire transfers
+                6010, 6011, 6050, 6051, // Cash/ATM/quasi-cash
+                7995,                   // Gambling
+                5912, 5122,             // Drug stores (high CNP fraud)
+                4829,                   // Wire transfers
+                9406,                   // Prepaid debit cards
             ],
         }
     }
@@ -212,6 +213,11 @@ impl Default for RuleEngine {
                     severity: 25.0,
                     evaluate: |_, features| features.entropy_score > 70.0,
                 },
+                Rule {
+                    id:       "MICRO_TEST_TXN",
+                    severity: 25.0,
+                    evaluate: |txn, _| txn.amount_cents > 0 && txn.amount_cents < 100,
+                },
             ],
         }
     }
@@ -301,6 +307,19 @@ mod tests {
         let (score, triggered) = engine.evaluate(&txn, &features);
         assert!(triggered.contains(&"HIGH_AMOUNT_FOREIGN".into()));
         assert!(score >= 40.0);
+    }
+
+    #[test]
+    fn test_rule_micro_test_txn() {
+        let engine = RuleEngine::default();
+        let txn = make_txn(5411, 50, "US", "dev-fp-001");
+        let features = TransactionFeatures {
+            velocity_score: 0.0, entropy_score: 0.0,
+            txn_count_60s: 1, spend_60s: 50, high_risk_mcc: false,
+        };
+        let (score, triggered) = engine.evaluate(&txn, &features);
+        assert!(triggered.contains(&"MICRO_TEST_TXN".into()));
+        assert!(score >= 25.0);
     }
 
     #[test]
