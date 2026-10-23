@@ -32,6 +32,13 @@ const VELOCITY_WEIGHT: f64 = 0.30;
 const ENTROPY_WEIGHT:  f64 = 0.20;
 
 // ---------------------------------------------------------------------------
+// Decision thresholds
+// ---------------------------------------------------------------------------
+
+const BLOCK_THRESHOLD:  u32 = 80;
+const REVIEW_THRESHOLD: u32 = 50;
+
+// ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
@@ -110,10 +117,13 @@ pub enum Decision {
 
 impl Decision {
     pub fn from_score(score: f64) -> Self {
-        match score as u32 {
-            80..=u32::MAX => Self::Block,
-            50..=79       => Self::Review,
-            _             => Self::Pass,
+        let s = score as u32;
+        if s >= BLOCK_THRESHOLD {
+            Self::Block
+        } else if s >= REVIEW_THRESHOLD {
+            Self::Review
+        } else {
+            Self::Pass
         }
     }
 }
