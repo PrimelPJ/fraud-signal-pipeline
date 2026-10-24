@@ -43,6 +43,12 @@ interface ClientMessage {
 }
 
 // ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const HIGH_RISK_SCORE_THRESHOLD = 0.75;
+
+// ---------------------------------------------------------------------------
 // Rolling window aggregator
 // ---------------------------------------------------------------------------
 
@@ -106,6 +112,10 @@ class SignalAggregator {
     this.windowStart = windowEnd;
 
     return window;
+  }
+
+  isHighRisk(window: AggregatedWindow): boolean {
+    return window.avg_score >= HIGH_RISK_SCORE_THRESHOLD;
   }
 }
 
