@@ -54,6 +54,8 @@ impl FeatureExtractor {
                 5912, 5122,             // Drug stores (high CNP fraud)
                 4829,                   // Wire transfers
                 9406,                   // Prepaid debit cards
+                6536, 6538,             // MoneySend funding and payment transactions
+                6012,                   // Financial institutions — merchandise/services
             ],
         }
     }
