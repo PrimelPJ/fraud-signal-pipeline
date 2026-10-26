@@ -39,30 +39,39 @@ const BLOCK_THRESHOLD:  u32 = 80;
 const REVIEW_THRESHOLD: u32 = 50;
 
 // ---------------------------------------------------------------------------
+// Kafka consumer tuning
+// ---------------------------------------------------------------------------
+
+const SESSION_TIMEOUT_MS: u64 = 30_000;
+
+// ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone)]
 struct Config {
-    kafka_brokers:   String,
-    input_topic:     String,
-    output_topic:    String,
-    consumer_group:  String,
-    max_concurrency: usize,
-    poll_timeout_ms: u64,
-    batch_size:      usize,
+    kafka_brokers:    String,
+    input_topic:      String,
+    output_topic:     String,
+    dead_letter_topic: String,
+    consumer_group:   String,
+    max_concurrency:  usize,
+    poll_timeout_ms:  u64,
+    batch_size:       usize,
 }
 
 impl Config {
     fn from_env() -> Result<Self> {
         Ok(Self {
-            kafka_brokers:   std::env::var("KAFKA_BROKERS")
+            kafka_brokers:    std::env::var("KAFKA_BROKERS")
                 .unwrap_or_else(|_| "localhost:9092".into()),
-            input_topic:     std::env::var("INPUT_TOPIC")
+            input_topic:      std::env::var("INPUT_TOPIC")
                 .unwrap_or_else(|_| "txn.raw".into()),
-            output_topic:    std::env::var("OUTPUT_TOPIC")
+            output_topic:     std::env::var("OUTPUT_TOPIC")
                 .unwrap_or_else(|_| "fraud.signals".into()),
-            consumer_group:  std::env::var("CONSUMER_GROUP")
+            dead_letter_topic: std::env::var("DEAD_LETTER_TOPIC")
+                .unwrap_or_else(|_| "fraud.dlq".into()),
+            consumer_group:   std::env::var("CONSUMER_GROUP")
                 .unwrap_or_else(|_| "fraud-processor-v1".into()),
             max_concurrency: std::env::var("MAX_CONCURRENCY")
                 .unwrap_or_else(|_| "256".into())
@@ -217,6 +226,7 @@ async fn main() -> Result<()> {
         .set("auto.offset.reset",       "earliest")
         .set("fetch.max.bytes",         "10485760") // 10 MB
         .set("max.poll.interval.ms",    "300000")
+        .set("session.timeout.ms",      &SESSION_TIMEOUT_MS.to_string())
         .create()
         .context("Failed to create Kafka consumer")?;
 
