@@ -11,6 +11,12 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use crate::RawTransaction;
 
 // ---------------------------------------------------------------------------
+// Sliding window duration
+// ---------------------------------------------------------------------------
+
+const VELOCITY_WINDOW_SECS: u64 = 60;
+
+// ---------------------------------------------------------------------------
 // Extracted feature set
 // ---------------------------------------------------------------------------
 
@@ -47,7 +53,7 @@ impl FeatureExtractor {
     pub fn new() -> Self {
         Self {
             window: RwLock::new(HashMap::new()),
-            window_secs: 60,
+            window_secs: VELOCITY_WINDOW_SECS,
             high_risk_mccs: vec![
                 6010, 6011, 6050, 6051, // Cash/ATM/quasi-cash
                 7995,                   // Gambling
@@ -220,6 +226,13 @@ impl Default for RuleEngine {
                     severity: 25.0,
                     evaluate: |txn, _| txn.amount_cents > 0 && txn.amount_cents < 100,
                 },
+                Rule {
+                    id:       "SANCTIONED_COUNTRY",
+                    severity: 45.0,
+                    evaluate: |txn, _| {
+                        matches!(txn.country_code.as_str(), "KP" | "IR" | "SY" | "CU" | "VE" | "MM" | "BY")
+                    },
+                },
             ],
         }
     }
@@ -322,6 +335,19 @@ mod tests {
         let (score, triggered) = engine.evaluate(&txn, &features);
         assert!(triggered.contains(&"MICRO_TEST_TXN".into()));
         assert!(score >= 25.0);
+    }
+
+    #[test]
+    fn test_rule_sanctioned_country() {
+        let engine = RuleEngine::default();
+        let txn = make_txn(5411, 1000, "KP", "dev-fp-001");
+        let features = TransactionFeatures {
+            velocity_score: 0.0, entropy_score: 0.0,
+            txn_count_60s: 1, spend_60s: 1000, high_risk_mcc: false,
+        };
+        let (score, triggered) = engine.evaluate(&txn, &features);
+        assert!(triggered.contains(&"SANCTIONED_COUNTRY".into()));
+        assert!(score >= 45.0);
     }
 
     #[test]
