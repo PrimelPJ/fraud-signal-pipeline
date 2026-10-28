@@ -11,6 +11,12 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use crate::RawTransaction;
 
 // ---------------------------------------------------------------------------
+// Sliding window duration
+// ---------------------------------------------------------------------------
+
+const VELOCITY_WINDOW_SECS: u64 = 60;
+
+// ---------------------------------------------------------------------------
 // Extracted feature set
 // ---------------------------------------------------------------------------
 
@@ -47,7 +53,7 @@ impl FeatureExtractor {
     pub fn new() -> Self {
         Self {
             window: RwLock::new(HashMap::new()),
-            window_secs: 60,
+            window_secs: VELOCITY_WINDOW_SECS,
             high_risk_mccs: vec![
                 6010, 6011, 6050, 6051, // Cash/ATM/quasi-cash
                 7995,                   // Gambling
