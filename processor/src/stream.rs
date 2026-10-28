@@ -226,6 +226,13 @@ impl Default for RuleEngine {
                     severity: 25.0,
                     evaluate: |txn, _| txn.amount_cents > 0 && txn.amount_cents < 100,
                 },
+                Rule {
+                    id:       "SANCTIONED_COUNTRY",
+                    severity: 45.0,
+                    evaluate: |txn, _| {
+                        matches!(txn.country_code.as_str(), "KP" | "IR" | "SY" | "CU" | "VE" | "MM" | "BY")
+                    },
+                },
             ],
         }
     }
@@ -328,6 +335,19 @@ mod tests {
         let (score, triggered) = engine.evaluate(&txn, &features);
         assert!(triggered.contains(&"MICRO_TEST_TXN".into()));
         assert!(score >= 25.0);
+    }
+
+    #[test]
+    fn test_rule_sanctioned_country() {
+        let engine = RuleEngine::default();
+        let txn = make_txn(5411, 1000, "KP", "dev-fp-001");
+        let features = TransactionFeatures {
+            velocity_score: 0.0, entropy_score: 0.0,
+            txn_count_60s: 1, spend_60s: 1000, high_risk_mcc: false,
+        };
+        let (score, triggered) = engine.evaluate(&txn, &features);
+        assert!(triggered.contains(&"SANCTIONED_COUNTRY".into()));
+        assert!(score >= 45.0);
     }
 
     #[test]
