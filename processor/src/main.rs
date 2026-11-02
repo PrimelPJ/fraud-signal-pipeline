@@ -35,8 +35,9 @@ const ENTROPY_WEIGHT:  f64 = 0.20;
 // Decision thresholds
 // ---------------------------------------------------------------------------
 
-const BLOCK_THRESHOLD:  u32 = 80;
-const REVIEW_THRESHOLD: u32 = 50;
+const BLOCK_THRESHOLD:     u32 = 80;
+const CHALLENGE_THRESHOLD: u32 = 65;
+const REVIEW_THRESHOLD:    u32 = 50;
 
 // ---------------------------------------------------------------------------
 // Kafka consumer tuning
@@ -120,6 +121,7 @@ pub struct FraudSignal {
 #[serde(rename_all = "UPPERCASE")]
 pub enum Decision {
     Block,
+    Challenge,
     Review,
     Pass,
 }
@@ -129,6 +131,8 @@ impl Decision {
         let s = score as u32;
         if s >= BLOCK_THRESHOLD {
             Self::Block
+        } else if s >= CHALLENGE_THRESHOLD {
+            Self::Challenge
         } else if s >= REVIEW_THRESHOLD {
             Self::Review
         } else {
