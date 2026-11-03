@@ -62,6 +62,9 @@ impl FeatureExtractor {
                 9406,                   // Prepaid debit cards
                 6536, 6538,             // MoneySend funding and payment transactions
                 6012,                   // Financial institutions — merchandise/services
+                4814,                   // Telecommunications / P2P payment platforms
+                5999,                   // Miscellaneous/digital goods (gift cards)
+                7399,                   // Business services — covers crypto exchange agents
             ],
         }
     }
