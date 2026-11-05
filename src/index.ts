@@ -46,6 +46,7 @@ interface ClientMessage {
 // Constants
 // ---------------------------------------------------------------------------
 
+const LOW_RISK_SCORE_THRESHOLD      = 0.25;
 const MEDIUM_RISK_SCORE_THRESHOLD   = 0.50;
 const HIGH_RISK_SCORE_THRESHOLD     = 0.75;
 const CRITICAL_RISK_SCORE_THRESHOLD = 0.90;
@@ -118,6 +119,10 @@ class SignalAggregator {
 
   isHighRisk(window: AggregatedWindow): boolean {
     return window.avg_score >= HIGH_RISK_SCORE_THRESHOLD;
+  }
+
+  isLowRisk(window: AggregatedWindow): boolean {
+    return window.avg_score >= LOW_RISK_SCORE_THRESHOLD && window.avg_score < MEDIUM_RISK_SCORE_THRESHOLD;
   }
 
   isMediumRisk(window: AggregatedWindow): boolean {
