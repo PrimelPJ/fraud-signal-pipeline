@@ -43,7 +43,8 @@ const REVIEW_THRESHOLD:    u32 = 50;
 // Kafka consumer tuning
 // ---------------------------------------------------------------------------
 
-const SESSION_TIMEOUT_MS: u64 = 30_000;
+const SESSION_TIMEOUT_MS:   u64 = 30_000;
+const FETCH_MAX_WAIT_MS:    u64 = 500;
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -231,6 +232,7 @@ async fn main() -> Result<()> {
         .set("fetch.max.bytes",         "10485760") // 10 MB
         .set("max.poll.interval.ms",    "300000")
         .set("session.timeout.ms",      &SESSION_TIMEOUT_MS.to_string())
+        .set("fetch.max.wait.ms",       &FETCH_MAX_WAIT_MS.to_string())
         .create()
         .context("Failed to create Kafka consumer")?;
 
