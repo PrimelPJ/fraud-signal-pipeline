@@ -233,7 +233,7 @@ impl Default for RuleEngine {
                     id:       "SANCTIONED_COUNTRY",
                     severity: 45.0,
                     evaluate: |txn, _| {
-                        matches!(txn.country_code.as_str(), "KP" | "IR" | "SY" | "CU" | "VE" | "MM" | "BY")
+                        matches!(txn.country_code.as_str(), "KP" | "IR" | "SY" | "CU" | "VE" | "MM" | "BY" | "RU" | "SD")
                     },
                 },
             ],

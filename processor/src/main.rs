@@ -45,6 +45,7 @@ const REVIEW_THRESHOLD:    u32 = 50;
 
 const SESSION_TIMEOUT_MS:   u64 = 30_000;
 const FETCH_MAX_WAIT_MS:    u64 = 500;
+const MAX_POLL_INTERVAL_MS: u64 = 300_000;
 
 // ---------------------------------------------------------------------------
 // Configuration
