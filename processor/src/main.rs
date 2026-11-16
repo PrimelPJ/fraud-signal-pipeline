@@ -27,9 +27,10 @@ use stream::{FeatureExtractor, RuleEngine, SignalEmitter};
 // Score weights — must sum to 1.0
 // ---------------------------------------------------------------------------
 
-const RULE_WEIGHT:     f64 = 0.50;
-const VELOCITY_WEIGHT: f64 = 0.30;
-const ENTROPY_WEIGHT:  f64 = 0.20;
+const RULE_WEIGHT:         f64 = 0.50;
+const VELOCITY_WEIGHT:     f64 = 0.30;
+const ENTROPY_WEIGHT:      f64 = 0.20;
+const CHANNEL_RISK_WEIGHT: f64 = 0.10; // Reserved for channel-aware scoring
 
 // ---------------------------------------------------------------------------
 // Decision thresholds
@@ -103,6 +104,9 @@ pub struct RawTransaction {
     pub device_fp:       String,
     pub timestamp_utc:   i64,
     pub country_code:    String,
+    /// Payment channel: "web" | "mobile" | "api" | "pos" | "ivr"
+    #[serde(default)]
+    pub channel_code:    String,
 }
 
 /// Fraud signal published to the output Kafka topic.

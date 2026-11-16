@@ -299,6 +299,7 @@ mod tests {
             device_fp:      device.into(),
             timestamp_utc:  0,
             country_code:   country.into(),
+            channel_code:   "web".into(),
         }
     }
 
