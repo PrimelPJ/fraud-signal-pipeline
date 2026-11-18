@@ -47,6 +47,7 @@ const REVIEW_THRESHOLD:    u32 = 50;
 const SESSION_TIMEOUT_MS:   u64 = 30_000;
 const FETCH_MAX_WAIT_MS:    u64 = 500;
 const MAX_POLL_INTERVAL_MS: u64 = 300_000;
+const MAX_PAYLOAD_BYTES:    usize = 1_048_576; // 1 MB hard cap per message
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -165,6 +166,9 @@ async fn process_message(
     cfg:       &Config,
 ) -> Result<()> {
     let payload = msg.payload().context("Empty message payload")?;
+    if payload.len() > MAX_PAYLOAD_BYTES {
+        anyhow::bail!("Payload size {} exceeds MAX_PAYLOAD_BYTES limit", payload.len());
+    }
 
     let txn: RawTransaction = serde_json::from_slice(payload)
         .context("Failed to deserialize transaction")?;
