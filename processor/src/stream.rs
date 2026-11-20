@@ -358,6 +358,19 @@ mod tests {
     }
 
     #[test]
+    fn test_rule_high_risk_jewelry_mcc() {
+        let engine = RuleEngine::default();
+        let txn = make_txn(5094, 20_000, "US", "dev-fp-001");
+        let features = TransactionFeatures {
+            velocity_score: 0.0, entropy_score: 0.0,
+            txn_count_60s: 1, spend_60s: 20_000, high_risk_mcc: true,
+        };
+        let (score, triggered) = engine.evaluate(&txn, &features);
+        assert!(triggered.contains(&"HIGH_RISK_MCC".into()));
+        assert!(score >= 30.0);
+    }
+
+    #[test]
     fn test_decision_from_score() {
         assert_eq!(Decision::from_score(85.0), Decision::Block);
         assert_eq!(Decision::from_score(60.0), Decision::Review);
