@@ -65,6 +65,9 @@ impl FeatureExtractor {
                 4814,                   // Telecommunications / P2P payment platforms
                 5999,                   // Miscellaneous/digital goods (gift cards)
                 7399,                   // Business services — covers crypto exchange agents
+                5094,                   // Jewelry, watches, silverware (high-value resale)
+                5047,                   // Medical/dental/ophthalmic equipment (false merchant scams)
+                6539,                   // Non-financial institutions — money transfers
             ],
         }
     }
@@ -352,6 +355,19 @@ mod tests {
         let (score, triggered) = engine.evaluate(&txn, &features);
         assert!(triggered.contains(&"SANCTIONED_COUNTRY".into()));
         assert!(score >= 45.0);
+    }
+
+    #[test]
+    fn test_rule_high_risk_jewelry_mcc() {
+        let engine = RuleEngine::default();
+        let txn = make_txn(5094, 20_000, "US", "dev-fp-001");
+        let features = TransactionFeatures {
+            velocity_score: 0.0, entropy_score: 0.0,
+            txn_count_60s: 1, spend_60s: 20_000, high_risk_mcc: true,
+        };
+        let (score, triggered) = engine.evaluate(&txn, &features);
+        assert!(triggered.contains(&"HIGH_RISK_MCC".into()));
+        assert!(score >= 30.0);
     }
 
     #[test]
