@@ -65,6 +65,9 @@ impl FeatureExtractor {
                 4814,                   // Telecommunications / P2P payment platforms
                 5999,                   // Miscellaneous/digital goods (gift cards)
                 7399,                   // Business services — covers crypto exchange agents
+                5094,                   // Jewelry, watches, silverware (high-value resale)
+                5047,                   // Medical/dental/ophthalmic equipment (false merchant scams)
+                6539,                   // Non-financial institutions — money transfers
             ],
         }
     }
