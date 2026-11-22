@@ -39,6 +39,7 @@ const CHANNEL_RISK_WEIGHT: f64 = 0.10; // Reserved for channel-aware scoring
 const BLOCK_THRESHOLD:     u32 = 80;
 const CHALLENGE_THRESHOLD: u32 = 65;
 const REVIEW_THRESHOLD:    u32 = 50;
+const MONITOR_THRESHOLD:   u32 = 35;
 
 // ---------------------------------------------------------------------------
 // Kafka consumer tuning
@@ -130,6 +131,7 @@ pub enum Decision {
     Block,
     Challenge,
     Review,
+    Monitor,
     Pass,
 }
 
@@ -142,6 +144,8 @@ impl Decision {
             Self::Challenge
         } else if s >= REVIEW_THRESHOLD {
             Self::Review
+        } else if s >= MONITOR_THRESHOLD {
+            Self::Monitor
         } else {
             Self::Pass
         }
