@@ -17,7 +17,7 @@ interface FraudSignal {
   txn_id:           string;
   account_id:       string;
   composite_score:  number;
-  decision:         "BLOCK" | "REVIEW" | "PASS";
+  decision:         "BLOCK" | "CHALLENGE" | "REVIEW" | "MONITOR" | "PASS";
   triggered_rules:  string[];
   velocity_score:   number;
   entropy_score:    number;
@@ -30,7 +30,9 @@ interface AggregatedWindow {
   window_end_ms:    number;
   total_txns:       number;
   blocked:          number;
+  challenged:       number;
   reviewed:         number;
+  monitored:        number;
   passed:           number;
   avg_score:        number;
   rule_hit_counts:  Record<string, number>;
@@ -83,9 +85,11 @@ class SignalAggregator {
       return null;
     }
 
-    const blocked  = windowSignals.filter((s) => s.decision === "BLOCK").length;
-    const reviewed = windowSignals.filter((s) => s.decision === "REVIEW").length;
-    const passed   = windowSignals.filter((s) => s.decision === "PASS").length;
+    const blocked    = windowSignals.filter((s) => s.decision === "BLOCK").length;
+    const challenged = windowSignals.filter((s) => s.decision === "CHALLENGE").length;
+    const reviewed   = windowSignals.filter((s) => s.decision === "REVIEW").length;
+    const monitored  = windowSignals.filter((s) => s.decision === "MONITOR").length;
+    const passed     = windowSignals.filter((s) => s.decision === "PASS").length;
 
     const avgScore =
       windowSignals.reduce((sum, s) => sum + s.composite_score, 0) /
@@ -103,7 +107,9 @@ class SignalAggregator {
       window_end_ms:    windowEnd,
       total_txns:       windowSignals.length,
       blocked,
+      challenged,
       reviewed,
+      monitored,
       passed,
       avg_score:        Math.round(avgScore * 100) / 100,
       rule_hit_counts:  ruleCounts,
