@@ -52,6 +52,7 @@ const LOW_RISK_SCORE_THRESHOLD      = 0.25;
 const MEDIUM_RISK_SCORE_THRESHOLD   = 0.50;
 const HIGH_RISK_SCORE_THRESHOLD     = 0.75;
 const CRITICAL_RISK_SCORE_THRESHOLD = 0.90;
+const FLUSH_INTERVAL_MS             = 500;
 
 // ---------------------------------------------------------------------------
 // Rolling window aggregator
@@ -246,7 +247,7 @@ async function main(): Promise<void> {
   setInterval(() => {
     const window = aggregator.flush();
     if (window) broadcaster.broadcast(window);
-  }, 500);
+  }, FLUSH_INTERVAL_MS);
 
   // Consume Kafka messages
   await consumer.run({
